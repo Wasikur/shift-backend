@@ -71,14 +71,9 @@ const googleLoginUser = async (req, res) => {
       return res.status(400).json({ message: 'Token is required' });
     }
 
-    // Verify token with Google's tokeninfo API
-    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
-    const data = await response.json();
-
-    if (!response.ok || data.error) {
-      return res.status(400).json({ message: 'Invalid Google token' });
-    }
-
+    const axios = require('axios');
+    const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+    const data = response.data;
     const { email, name, picture } = data;
 
     // Check if user already exists
