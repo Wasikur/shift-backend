@@ -72,9 +72,16 @@ const googleLoginUser = async (req, res) => {
     }
 
     const axios = require('axios');
-    const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
-    const data = response.data;
-    const { email, name, picture } = data;
+
+    let googleData;
+    try {
+      const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+      googleData = response.data;
+    } catch (googleErr) {
+      return res.status(400).json({ message: 'Invalid or expired Google token' });
+    }
+
+    const { email, name, picture } = googleData;
 
     // Check if user already exists
     let user = await User.findOne({ email });
