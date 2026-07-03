@@ -8,8 +8,18 @@ const connectDB = require('./config/db');
 // Initialize Express
 const app = express();
 
-// Connect to Database
-connectDB();
+// Middleware to ensure DB connection (especially important in Vercel Serverless environment)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({
+      message: 'Database connection failed',
+      error: err.message
+    });
+  }
+});
 
 // Middleware
 app.use(cors({
